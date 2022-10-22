@@ -31,67 +31,39 @@ final storagePlugin = AmplifyStorageS3(prefixResolver: MyCustomPrefixResolver())
 await Amplify.addPlugin(storagePlugin);
 ```
 
-Add the IAM policy that corresponds with the prefixes defined above to enable read, write and delete operation for all the objects under path _myPublicPrefix/_:
+You will need to update the permissions of your S3 buckets to enable read, write and delete operation for all the objects under path _myPublicPrefix/_.
+
+Go to s3.console.aws.amazon.com then click on your bucket, then go to Permissions and add the below JSON to your Bucket Policy:
 
 ```json
 {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Action": [
-                "s3:PutObject",
-                "s3:GetObject",
-                "s3:DeleteObject"
-            ],
-            "Resource": [
-                "arn:aws:s3:::your-s3-bucket/myPublicPrefix/*"
-            ],
-            "Effect": "Allow"
-        }
-    ]
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": ["s3:PutObject", "s3:GetObject", "s3:DeleteObject"],
+      "Resource": ["arn:aws:s3:::your-s3-bucket/myPublicPrefix/*"],
+      "Effect": "Allow"
+    }
+  ]
 }
+```
 
 If you want to have custom _private_ path prefix like `myPrivatePrefix/`, you need to add permissions to the IAM policy of your authenticated users. For example, for the given IAM principal (default authenticated role for Amplify projects):
 
 ```json
 {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Principal": {
-                "Federated": "cognito-identity.amazonaws.com"
-            },
-            "Action": "sts:AssumeRoleWithWebIdentity",
-            "Condition": {
-                "StringEquals": {
-                    "cognito-identity.amazonaws.com:aud": "<identity pool ID>"
-                },
-                "ForAnyValue:StringLike": {
-                    "cognito-identity.amazonaws.com:amr": "authenticated"
-                }
-            }
-        }
-    ]
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
+      "Resource": [
+        "arn:aws:s3:::your-s3-bucket/myPrivatePrefix/${cognito-identity.amazonaws.com:sub}/*"
+      ]
+    }
+  ]
 }
-
-```json
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Action": [
-                "s3:PutObject",
-                "s3:GetObject",
-                "s3:DeleteObject"
-            ],
-            "Resource": [
-                "arn:aws:s3:::your-s3-bucket/myPrivatePrefix/${cognito-identity.amazonaws.com:sub}/*"
-            ],
-            "Effect": "Allow"
-        }
-    ]
-}
+```
 
 #### Passthrough PrefixResolver
 
