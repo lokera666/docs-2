@@ -21,7 +21,7 @@ Compared to the traditional callback API, this doesn't make a big difference whe
 
 However, it greatly improves readability when chaining asynchronous calls. Moreover, you can use standard RxJava operators to compose other complex functionality into readable chunks.
 
-Let's revisit our nested example where we saved `Post`, `Editor`, and `PostEditor`. With Amplify's RxJava interface we can merge these operations together.
+Let's revisit your nested example where you saved `Post`, `Editor`, and `PostEditor`. With Amplify's RxJava interface you can merge these operations together.
 
 ```java
 Completable.mergeArray(
@@ -37,30 +37,30 @@ Completable.mergeArray(
 
 Compared to nesting these dependent calls in callbacks, this provides a much more readable pattern.
 
-## Installation
+### Install RxJava support
 
 Amplify's RxJava support is included in an optional module, `rxbindings`. To start using the Rx APIs, add the following dependency to your application's Gradle file:
 
-Under **Gradle Scripts**, open **build.gradle (Module: [YourApplicationName])**.
+Under **Gradle Scripts**, open **build.gradle (Module :app)**.
 
 Add the following line in `dependencies`:
 
 ```groovy
 dependencies {
     // Add the below line in `dependencies`
-    implementation 'com.amplifyframework:rxbindings:ANDROID_VERSION'
+    implementation 'com.amplifyframework:rxbindings:ANDROID_V1_VERSION'
 }
 ```
 
-## Usage
+### Using Rx primitives
 
-Amplify tries to map the behavior of our callback-based APIs to well-known Rx primitives in an intuitive way. Functions whose callbacks emit a single value (or error) will now return Rx `Single`s, instead. Functions whose callbacks emit no particular value will now return Rx `Completable`s, instead. Lastly, functions whose callbacks emit a stream of values will now return `Observable`s, instead.
+Amplify tries to map the behavior of your callback-based APIs to well-known Rx primitives in an intuitive way. Functions whose callbacks emit a single value (or error) will now return Rx `Single`s, instead. Functions whose callbacks emit no particular value will now return Rx `Completable`s, instead. Lastly, functions whose callbacks emit a stream of values will now return `Observable`s, instead.
 
-## Special cases
+### Special cases with RxJava
 
 Some APIs return an operation which can be cancelled. Examples include subscribing to an API or uploading or downloading objects from Storage.
 
-### API subscriptions
+#### API subscriptions with RxJava
 
 The API category's `subscribe()` method exposes two `Observable`s: one for subscription data, and one for connection state. You can access these `Observable`s using `observeConnectionState()` and `observeSubscriptionData()` on the returned operation:
 
@@ -83,7 +83,7 @@ subscription
     );
 ```
 
-### Storage upload & download operations
+#### Storage upload and download operations with RxJava
 
 The Storage category's `downloadFile()` and `uploadFile()` work largely the same way. `uploadFile()` and `downloadFile()` both return an operation containing a `Single` and an `Observable`. The `Single` can be used to obtain the result of the download, and the `Observable` can be used to monitor download/upload progress.
 

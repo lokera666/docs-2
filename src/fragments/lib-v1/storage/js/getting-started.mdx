@@ -1,4 +1,4 @@
-> Prerequisite: [Install and configure](/cli/start/install) the Amplify CLI
+> Prerequisite: [Install and configure](/gen1/[platform]/tools/cli/start/set-up-cli/) the Amplify CLI
 
 ## Storage with Amplify
 
@@ -14,7 +14,7 @@ To start from scratch, run the following command from the root of your project:
 amplify add storage
 ```
 
-and select *Content* in prompted options:
+and select _Content_ in prompted options:
 
 ```console
 ? Please select from one of the below mentioned services (Use arrow keys)
@@ -35,15 +35,24 @@ When your backend is successfully updated, your new configuration file `aws-expo
 Add Amplify to your app with `yarn` or `npm`:
 
 ```bash
-npm install -S aws-amplify
+npm install aws-amplify@^5
 ```
 
-In your app’s entry point i.e. `App.js`, import and load the configuration file `aws-exports.js` which has been created and replaced into `/src` folder in the previous step.
+import js0 from '/src/fragments/lib/common/js/import_configuration.mdx';
+
+<Fragments fragments={{  javascript: js0 , angular: js0, nextjs: js0, react: js0, vue: js0 }} />
+
+import rn1 from '/src/fragments/lib/common/react-native/import_configuration.mdx';
+
+<Fragments fragments={{ 'react-native': rn1 }} />
+
 ```javascript
 import { Amplify, Storage } from 'aws-amplify';
 import awsconfig from './aws-exports';
 Amplify.configure(awsconfig);
 ```
+
+{/* TODO Rewrite this section needs to be removed and replaced with re-using existing resources. */}
 
 ## Manual Setup: Import storage bucket
 
@@ -53,86 +62,73 @@ To configure Storage manually, you will have to configure Amplify Auth category 
 import { Amplify, Auth, Storage } from 'aws-amplify';
 
 Amplify.configure({
-    Auth: {
-        identityPoolId: 'XX-XXXX-X:XXXXXXXX-XXXX-1234-abcd-1234567890ab', //REQUIRED - Amazon Cognito Identity Pool ID
-        region: 'XX-XXXX-X', // REQUIRED - Amazon Cognito Region
-        userPoolId: 'XX-XXXX-X_abcd1234', //OPTIONAL - Amazon Cognito User Pool ID
-        userPoolWebClientId: 'XX-XXXX-X_abcd1234', //OPTIONAL - Amazon Cognito Web Client ID
-    },
-    Storage: {
-        AWSS3: {
-            bucket: '', //REQUIRED -  Amazon S3 bucket name
-            region: 'XX-XXXX-X', //OPTIONAL -  Amazon service region
-        }
+  Auth: {
+    identityPoolId: 'XX-XXXX-X:XXXXXXXX-XXXX-1234-abcd-1234567890ab', //REQUIRED - Amazon Cognito Identity Pool ID
+    region: 'XX-XXXX-X', // REQUIRED - Amazon Cognito Region
+    userPoolId: 'XX-XXXX-X_abcd1234', //OPTIONAL - Amazon Cognito User Pool ID
+    userPoolWebClientId: 'XX-XXXX-X_abcd1234' //OPTIONAL - Amazon Cognito Web Client ID
+  },
+  Storage: {
+    AWSS3: {
+      bucket: '', //REQUIRED -  Amazon S3 bucket name
+      region: 'XX-XXXX-X', //OPTIONAL -  Amazon service region
+      isObjectLockEnabled: true //OPTIONAl - Object Lock parameter
     }
+  }
 });
-
 ```
 
+You can configure the [**S3 Object Lock**](https://aws.amazon.com/blogs/storage/protecting-data-with-amazon-s3-object-lock/) parameter of the bucket using the `isObjectLockEnabled` configuration field. By default, `isObjectLockEnabled` is set to `false`. If you want to perform a `put` operation against a bucket with Object Lock enabled through the console you must first set `isObjectLockEnabled` to true.
+
 ### Using Amazon S3
+
 If you set up your Cognito resources manually, the roles will need to be given permission to access the S3 bucket.
 
-There are two roles created by Cognito: an `Auth_Role` that grants signed-in-user-level bucket access and an `Unauth_Role` that allows unauthenticated access to resources. Attach the corresponding policies to each role for proper S3 access. Replace ```{enter bucket name}``` with the correct S3 bucket.
+There are two roles created by Cognito: an `Auth_Role` that grants signed-in-user-level bucket access and an `Unauth_Role` that allows unauthenticated access to resources. Attach the corresponding policies to each role for proper S3 access. Replace `{enter bucket name}` with the correct S3 bucket.
 
 Inline policy for the `Auth_Role`:
 
 ```json
 {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Action": [
-                "s3:GetObject",
-                "s3:PutObject",
-                "s3:DeleteObject"
-            ],
-            "Resource": [
-                "arn:aws:s3:::{enter bucket name}/public/*",
-                "arn:aws:s3:::{enter bucket name}/protected/${cognito-identity.amazonaws.com:sub}/*",
-                "arn:aws:s3:::{enter bucket name}/private/${cognito-identity.amazonaws.com:sub}/*"
-            ],
-            "Effect": "Allow"
-        },
-        {
-            "Action": [
-                "s3:PutObject"
-            ],
-            "Resource": [
-                "arn:aws:s3:::{enter bucket name}/uploads/*"
-            ],
-            "Effect": "Allow"
-        },
-        {
-            "Action": [
-                "s3:GetObject"
-            ],
-            "Resource": [
-                "arn:aws:s3:::{enter bucket name}/protected/*"
-            ],
-            "Effect": "Allow"
-        },
-        {
-            "Condition": {
-                "StringLike": {
-                    "s3:prefix": [
-                        "public/",
-                        "public/*",
-                        "protected/",
-                        "protected/*",
-                        "private/${cognito-identity.amazonaws.com:sub}/",
-                        "private/${cognito-identity.amazonaws.com:sub}/*"
-                    ]
-                }
-            },
-            "Action": [
-                "s3:ListBucket"
-            ],
-            "Resource": [
-                "arn:aws:s3:::{enter bucket name}"
-            ],
-            "Effect": "Allow"
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
+      "Resource": [
+        "arn:aws:s3:::{enter bucket name}/public/*",
+        "arn:aws:s3:::{enter bucket name}/protected/${cognito-identity.amazonaws.com:sub}/*",
+        "arn:aws:s3:::{enter bucket name}/private/${cognito-identity.amazonaws.com:sub}/*"
+      ],
+      "Effect": "Allow"
+    },
+    {
+      "Action": ["s3:PutObject"],
+      "Resource": ["arn:aws:s3:::{enter bucket name}/uploads/*"],
+      "Effect": "Allow"
+    },
+    {
+      "Action": ["s3:GetObject"],
+      "Resource": ["arn:aws:s3:::{enter bucket name}/protected/*"],
+      "Effect": "Allow"
+    },
+    {
+      "Condition": {
+        "StringLike": {
+          "s3:prefix": [
+            "public/",
+            "public/*",
+            "protected/",
+            "protected/*",
+            "private/${cognito-identity.amazonaws.com:sub}/",
+            "private/${cognito-identity.amazonaws.com:sub}/*"
+          ]
         }
-    ]
+      },
+      "Action": ["s3:ListBucket"],
+      "Resource": ["arn:aws:s3:::{enter bucket name}"],
+      "Effect": "Allow"
+    }
+  ]
 }
 ```
 
@@ -140,57 +136,34 @@ Inline policy for the `Unauth_Role`:
 
 ```json
 {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Action": [
-                "s3:GetObject",
-                "s3:PutObject",
-                "s3:DeleteObject"
-            ],
-            "Resource": [
-                "arn:aws:s3:::{enter bucket name}/public/*"
-            ],
-            "Effect": "Allow"
-        },
-        {
-            "Action": [
-                "s3:PutObject"
-            ],
-            "Resource": [
-                "arn:aws:s3:::{enter bucket name}/uploads/*"
-            ],
-            "Effect": "Allow"
-        },
-        {
-            "Action": [
-                "s3:GetObject"
-            ],
-            "Resource": [
-                "arn:aws:s3:::{enter bucket name}/protected/*"
-            ],
-            "Effect": "Allow"
-        },
-        {
-            "Condition": {
-                "StringLike": {
-                    "s3:prefix": [
-                        "public/",
-                        "public/*",
-                        "protected/",
-                        "protected/*"
-                    ]
-                }
-            },
-            "Action": [
-                "s3:ListBucket"
-            ],
-            "Resource": [
-                "arn:aws:s3:::{enter bucket name}"
-            ],
-            "Effect": "Allow"
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
+      "Resource": ["arn:aws:s3:::{enter bucket name}/public/*"],
+      "Effect": "Allow"
+    },
+    {
+      "Action": ["s3:PutObject"],
+      "Resource": ["arn:aws:s3:::{enter bucket name}/uploads/*"],
+      "Effect": "Allow"
+    },
+    {
+      "Action": ["s3:GetObject"],
+      "Resource": ["arn:aws:s3:::{enter bucket name}/protected/*"],
+      "Effect": "Allow"
+    },
+    {
+      "Condition": {
+        "StringLike": {
+          "s3:prefix": ["public/", "public/*", "protected/", "protected/*"]
         }
-    ]
+      },
+      "Action": ["s3:ListBucket"],
+      "Resource": ["arn:aws:s3:::{enter bucket name}"],
+      "Effect": "Allow"
+    }
+  ]
 }
 ```
 
@@ -198,42 +171,36 @@ The policy template that Amplify CLI uses is found [here](https://github.com/aws
 
 ### Amazon S3 Bucket CORS Policy Setup
 
+{/* TODO Rewrite is this needed only for JS? or is it needed for Flutter Web for example as well? */}
+
 <Callout warning>
 
 To make calls to your S3 bucket from your App, you need to set up a CORS Policy for your S3 bucket. This callout is only for manual configuration of your S3 bucket, CORS Policy configuration is done automatically via Amplify CLI when running `amplify add storage`.
 
 </Callout>
 
-The following steps will set up your CORS Policy: 
+The following steps will set up your CORS Policy:
 
-1. Go to [Amazon S3 Console](https://s3.console.aws.amazon.com/s3/home?region=us-east-1) and click on your project's `userfiles` bucket, which is normally named as [Project Name]-userfiles-mobilehub-[App Id]. 
-2. Click on the **Permissions** tab for your bucket, and then click on the **CORS configuration** tile.
-3. Update your bucket's CORS Policy to look like:
+1. Go to [Amazon S3 Console](https://s3.console.aws.amazon.com/s3/home?region=us-east-1) and click on your project's `userfiles` bucket, which is normally named as [Bucket Name][Id]-dev. ![Go to [Amazon S3 Console]](/images/storage/CORS1.png)
+2. Click on the **Permissions** tab for your bucket. ![Click on the **Permissions** tab for your bucket](/images/storage/CORS2.png)
+3. Click the edit button in the **Cross-origin resource sharing (CORS)** section. ![Click the edit button in the **Cross-origin resource sharing (CORS)** section](/images/storage/CORS3.png)
+4. Make the Changes and click on Save Changes. You can add required metadata to be exposed in `ExposeHeaders` with `x-amz-meta-XXXX` format. ![Click on Save Changes:](/images/storage/CORS4.png)
 
 ```json
 [
-    {
-        "AllowedHeaders": [
-            "*"
-        ],
-        "AllowedMethods": [
-            "GET",
-            "HEAD",
-            "PUT",
-            "POST",
-            "DELETE"
-        ],
-        "AllowedOrigins": [
-            "*"
-        ],
-        "ExposeHeaders": [
-            "x-amz-server-side-encryption",
-            "x-amz-request-id",
-            "x-amz-id-2",
-            "ETag"
-        ],
-        "MaxAgeSeconds": 3000
-    }
+  {
+    "AllowedHeaders": ["*"],
+    "AllowedMethods": ["GET", "HEAD", "PUT", "POST", "DELETE"],
+    "AllowedOrigins": ["*"],
+    "ExposeHeaders": [
+      "x-amz-server-side-encryption",
+      "x-amz-request-id",
+      "x-amz-id-2",
+      "ETag",
+      "x-amz-meta-foo"
+    ],
+    "MaxAgeSeconds": 3000
+  }
 ]
 ```
 
@@ -243,92 +210,8 @@ The following steps will set up your CORS Policy:
 
 </Callout>
 
-For information on Amazon S3 file access levels, please see [file access levels](/lib-v1/storage/configureaccess).
-
-## Using a Custom Plugin
-
-You can create your custom pluggable for Storage. This may be helpful if you want to integrate your app with a custom storage backend.
-
-To create a plugin implement the `StorageProvider` interface:
-
-```typescript
-import { Storage, StorageProvider } from 'aws-amplify';
-
-export default class MyStorageProvider implements StorageProvider {
-    // category and provider name
-    static category = 'Storage';
-    static providerName = 'MyStorage';
-
-    // you need to implement these seven methods
-    // configure your provider
-    configure(config: object): object;
-
-    // copy object, optional
-    copy?(
-	    src: { key: string; identityId: string; level: 'public' | 'protected' | 'private' },
-	    dest: { key: string; level: 'public' | 'protected' | 'private' },
-	    options?
-    ): Promise<any>
-
-    // get object/pre-signed url from storage
-    get(key: string, options?): Promise<String|Object>
-
-    // upload storage object
-    put(key: string, object, options?): Promise<Object>
-
-    // remove object 
-    remove(key: string, options?): Promise<any>
-
-    // list objects for the path
-    list(path, options?): Promise<any>
-    
-    // return 'Storage';
-    getCategory(): string;
-    
-    // return the name of you provider
-    getProviderName(): string;
-```
-
-You can now register your pluggable:
-
-```javascript
-// add the plugin
-Storage.addPluggable(new MyStorageProvider());
-
-// get the plugin
-Storage.getPluggable(MyStorageProvider.providerName);
-
-// remove the plugin
-Storage.removePluggable(MyStorageProvider.providerName);
-
-// send configuration into Amplify
-Storage.configure({
-    [MyStorageProvider.providerName]: { 
-        // My Storage provider configuration 
-    }
-});
-
-```
-
-You can pass in your custom provider class to the Storage function to get Typescript support:
-```javascript
-class MyStorageProvider implements StorageProvider {
-	...
-	get(key: string, config: { config1: number; }): Promise<{ key: string }>;
-}
-
-// will automatically use the return type from the provider's function signature
-const getResult: Promise<{ key: string }> = Storage.get<MyStorageProvider>('key', {
-	provider: 'MyStorageProvider',
-	config1: 123,
-});
-```
-
-The default provider (Amazon S3) is in use when you call `Storage.put( )` unless you specify a different provider: `Storage.put(key, object, {provider: 'MyStorageProvider'})`. 
+For information on Amazon S3 file access levels, please see [file access levels](/gen1/[platform]/build-a-backend/storage/configure-access/).
 
 ## Mocking and Local Testing with Amplify CLI
-Amplify CLI supports running a local mock server for testing your application with Amazon S3. Please see the [CLI toolchain documentation](/cli/usage/mock) for more details.
 
-## API Reference
-
-For the complete API documentation for Storage module, visit our [API Reference](https://aws-amplify.github.io/amplify-js/api/classes/storageclass.html).
+Amplify CLI supports running a local mock server for testing your application with Amazon S3. Please see the [CLI toolchain documentation](/gen1/[platform]/tools/cli/usage/mock/) for more details.

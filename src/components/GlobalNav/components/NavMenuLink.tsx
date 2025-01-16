@@ -1,12 +1,11 @@
 import { Text, Link } from '@aws-amplify/ui-react';
 import { Dispatch, SetStateAction } from 'react';
-import styles from '../GlobalNav.module.scss';
 import { IconLink, ExternalLink } from './icons';
 import { NavMenuItem } from '../GlobalNav';
 
 export function NavMenuLink({
   navMenuItem,
-  currentMenuItem = '',
+  currentMenuItem = ''
 }: {
   navMenuItem: NavMenuItem;
   currentMenuItem: string;
@@ -17,37 +16,32 @@ export function NavMenuLink({
   const label: string = navMenuItem.label;
   const linkContent: JSX.Element =
     navMenuItem.type === 'EXTERNAL' ? (
-      <Text as="span" color="inherit">
-        <ExternalLink>{label}</ExternalLink>
-      </Text>
+      <ExternalLink>{label}</ExternalLink>
     ) : (
-
-      <Text as="span" color="inherit" className={styles['icon-link']}>
+      <Text as="span" color="inherit" className="icon-link">
         <IconLink iconType={navMenuItem.icon ? navMenuItem.icon : ''} />
       </Text>
     );
 
   if (navMenuItem.type === 'DEFAULT') {
     return (
-      <Link className={`${styles['nav-menu-item']}`} href={navMenuItem.url}>
-        <Text
-          as="span"
-          color="inherit"
-          className={
-            navMenuItem.label === currentMenuItem
-              ? styles['current-nav-menu-item']
-              : ''
-          }
-        >
-          {label}
-        </Text>
+      <Link
+        className={`navbar-menu-item ${
+          navMenuItem.label === currentMenuItem
+            ? 'navbar-menu-item--current'
+            : ''
+        }`}
+        href={navMenuItem.url}
+      >
+        {label}
       </Link>
     );
   } else {
     return (
       <Link
         isExternal={true}
-        className={styles['nav-menu-item']}
+        aria-label={label + ' (opens in new tab)'}
+        className="navbar-menu-item"
         href={navMenuItem.url}
       >
         {linkContent}

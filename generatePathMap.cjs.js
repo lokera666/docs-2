@@ -34,8 +34,8 @@ function generatePathMap(
     '/start/q/integration/react-native': {
       page: '/start/q/integration/[integration]'
     },
-    "/start/q/integration/ios": {
-      page: "/start/q/integration/[integration]",
+    '/start/q/integration/ios': {
+      page: '/start/q/integration/[integration]'
     },
     '/start/q/integration/flutter': {
       page: '/start/q/integration/[integration]'
@@ -55,41 +55,20 @@ function generatePathMap(
     '/lib/q/platform/react-native': {
       page: '/lib/q/platform/[platform]'
     },
+    '/lib-v1/q/platform/android': {
+      page: '/lib-v1/q/platform/[platform]'
+    },
     '/lib-v1/q/platform/ios': {
       page: '/lib-v1/q/platform/[platform]'
     },
-    '/ui/q/framework/react': {
-      page: '/ui/q/framework/[framework]'
+    '/lib-v1/q/platform/flutter': {
+      page: '/lib-v1/q/platform/[platform]'
     },
-    '/ui/q/framework/react-native': {
-      page: '/ui/q/framework/[framework]'
+    '/lib-v1/q/platform/js': {
+      page: '/lib-v1/q/platform/[platform]'
     },
-    '/ui/q/framework/angular': {
-      page: '/ui/q/framework/[framework]'
-    },
-    '/ui/q/framework/vue': {
-      page: '/ui/q/framework/[framework]'
-    },
-    '/ui/q/framework/flutter': {
-      page: '/ui/q/framework/[framework]'
-    },
-    '/ui/q/framework/next': {
-      page: '/ui/q/framework/[framework]'
-    },
-    '/ui-legacy/q/framework/react': {
-      page: '/ui-legacy/q/framework/[framework]'
-    },
-    '/ui-legacy/q/framework/react-native': {
-      page: '/ui-legacy/q/framework/[framework]'
-    },
-    '/ui-legacy/q/framework/angular': {
-      page: '/ui-legacy/q/framework/[framework]'
-    },
-    '/ui-legacy/q/framework/vue': {
-      page: '/ui-legacy/q/framework/[framework]'
-    },
-    '/ui-legacy/q/framework/next': {
-      page: '/ui-legacy/q/framework/[framework]'
+    '/lib-v1/q/platform/react-native': {
+      page: '/lib-v1/q/platform/[platform]'
     },
     '/sdk/q/platform/js': {
       page: '/sdk/q/platform/[platform]'
@@ -103,6 +82,9 @@ function generatePathMap(
     '/sdk/q/platform/flutter': {
       page: '/sdk/q/platform/[platform]'
     },
+    '/sdk/q/platform/react-native': {
+      page: '/sdk/q/platform/[platform]'
+    },
     '/console': {
       page: '/console'
     },
@@ -111,8 +93,18 @@ function generatePathMap(
     },
     '/cli/function': {
       page: '/cli/function'
+    },
+    '/flutter-references': {
+      page: '/flutter-references'
+    },
+    '/contribute': {
+      page: '/contribute'
+    },
+    '/contribute/getting-started': {
+      page: '/contribute/getting-started'
     }
-  }
+  },
+  removeChoosePages = false //this flag if set will generate a pathmap without the choose platform pages
 ) {
   for (const [_, value] of Object.entries(obj)) {
     const { items, filters, route, productRoot } = value;
@@ -134,23 +126,10 @@ function generatePathMap(
       } else if (route.startsWith('/start')) {
         filterKind = 'integration';
       }
-
-      if (filterKind !== '') {
-        const aOrAn = 'aeiou'.includes(filterKind[0]) ? 'an' : 'a';
-        pathMap[route] = {
-          page: '/ChooseFilterPage',
-          query: {
-            address: route,
-            directoryPath: '/ChooseFilterPage',
-            filterKind: filterKind,
-            message: `Choose ${aOrAn} ${filterKind}:`
-          }
-        };
-      }
     }
 
     if (items) {
-      generatePathMap(items, pathMap);
+      generatePathMap(items, pathMap, removeChoosePages);
     }
 
     if (!filters || !filters.length) {
@@ -207,22 +186,15 @@ function generatePathMap(
         'next'
       ];
     }
+    if (removeChoosePages) {
+      // reset the allFilters to the filters found in the directory object, this will remove the choose platform pages from the pathmap being generated
+      allFilters = filters;
+    }
     allFilters.forEach((filter) => {
       pathMap[route + '/q/' + routeType + '/' + filter] = {
         page: `${route}/q/${routeType}/[${routeType}]`
       };
     });
-    const aOrAn = 'aeiou'.includes(routeType[0]) ? 'an' : 'a';
-    pathMap[route] = {
-      page: '/ChooseFilterPage',
-      query: {
-        address: route,
-        directoryPath: '/ChooseFilterPage',
-        filterKind: routeType,
-        filters: filters,
-        message: `Choose ${aOrAn} ${routeType}:`
-      }
-    };
   }
   return pathMap;
 }

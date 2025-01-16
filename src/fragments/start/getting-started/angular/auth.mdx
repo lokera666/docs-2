@@ -28,7 +28,7 @@ amplify console
 
 ## Create login UI
 
-Now that we have our authentication service deployed to AWS, it's time to add authentication to our Angular app. Creating the login flow can be quite difficult and time consuming to get right. Luckily Amplify has an authentication UI component we can use that will provide the entire authentication flow for us, using our configuration specified in our `aws-exports.js` file.
+Now that you have your authentication service deployed to AWS, it's time to add authentication to your Angular app. Creating the login flow can be quite difficult and time consuming to get right. Luckily Amplify has an authentication UI component you can use that will provide the entire authentication flow for us, using your configuration specified in your `amplifyconfiguration.json` file.
 
 First, import Authenticator style inside your stylesheet (e.g. `src/style.css`):
 
@@ -75,6 +75,6 @@ You can also [customize](https://ui.docs.amplify.aws/angular/components/authenti
 
 In addition to the `amplify-authenticator` you can build custom authentication flows using the `Auth` class.
 
-`Auth` has over 30 methods including `signUp`, `signIn`, `forgotPassword`, and `signOut` that allow you full control over all aspects of the user authentication flow. Check out the complete API [here](https://aws-amplify.github.io/amplify-js/api/classes/authclass.html)
+`Auth` has over 30 methods including `signUp`, `signIn`, `forgotPassword`, and `signOut` that allow you full control over all aspects of the user authentication flow. Check out the complete API [here](https://aws-amplify.github.io/amplify-js/api/modules/aws_amplify.auth.html)
 
 In the next section, you'll host your app on the **Amplify Console**, a hosting service complete with a globally available CDN, atomic deployments, easy custom domains, and CI / CD.

@@ -1,0 +1,39 @@
+name: Deleted Assets Workflow
+on:
+  pull_request:
+    branches: [main]
+env:
+  ARTIFACT_NAME: 'deletedAssetsArtifact'
+  PATHS_TO_CHECK: 'public'
+jobs:
+  checkIfAssetsWereDeleted:
+    name: Check if assets were deleted
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository to get the workflow scripts
+        uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
+      - name: Get count of deleted files
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        id: set-deleted-files-count
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          result-encoding: string
+          script: |
+            const { PATHS_TO_CHECK } = process.env;
+            const paths = PATHS_TO_CHECK.split(',');
+
+            const { getDeletedFilesFromPR } = require('./.github/workflows/scripts/utilities.js');
+            return await getDeletedFilesFromPR({github, context, paths});
+      - name: Create artifact containing the PR number and deleted file count
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          artifactName="${{ env.ARTIFACT_NAME }}.txt"
+          echo ${{ env.PR_NUMBER }} >> $artifactName
+          echo ${{ steps.set-deleted-files-count.outputs.result }} >> $artifactName
+      - name: Upload the deleted assets file to artifacts
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: '${{ env.ARTIFACT_NAME }}.txt'
+          retention-days: 1

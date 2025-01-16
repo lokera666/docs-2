@@ -24,12 +24,12 @@ val post = Post.builder()
 
 Amplify.DataStore.save(post,
     { Log.i("MyAmplifyApp", "Created a new post successfully") },
-    { Log.e("MyAmplifyApp", "Error creating post", error) }
+    { Log.e("MyAmplifyApp", "Error creating post", it) }
 )
 ```
 
 </Block>
-<Block name="Kotlin - Coroutines (Beta)">
+<Block name="Kotlin - Coroutines">
 
 ```kotlin
 val post = Post.builder()

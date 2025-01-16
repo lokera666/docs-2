@@ -14,7 +14,7 @@ Create a new Nuxt site:
 # Using YARN
 yarn create nuxt-app amplify-nuxt
 
-# Using NPM
+# Using npm
 npx create-nuxt-app amplify-nuxt
 ```
 
@@ -23,7 +23,7 @@ For the __Deployment target__, choose __Static (Static/JAMStack hosting)__.
 Next, change into the new directory:
 
 ```sh
-cd nuxt-amplify
+cd amplify-nuxt
 ```
 
 ### Creating the Git repository
@@ -59,10 +59,55 @@ In the next screen, choose your repository and branch and click __Next__:
 In the __App build and test settings__ view, click __Edit__ and do the following:
 
 1. Set the __build__ command to: `yarn run generate`
-2. Set the `baseDirectory` location to be `dist`
+2. Set the `baseDirectory` location (see build settings below)
 3. Click __Save__
 4. Click __Next__
 
+For Nuxt 2, set `baseDirectory: dist`:
+```yaml
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - yarn install
+    build:
+      commands:
+        - yarn generate
+  artifacts:
+    # IMPORTANT - Please verify your build output directory
+    baseDirectory: dist
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
+
+```
+
+For Nuxt 3, set `baseDirectory: '.output/public'`:
+```yaml
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - yarn install
+    build:
+      commands:
+        - yarn generate
+  artifacts:
+    # IMPORTANT - Please verify your build output directory
+    baseDirectory: '.output/public'
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - node_modules/**/*
+
+```
+
+Below is an example of editing the build settings for a Nuxt v2 application:
 ![Nuxt Hosting with Amplify Console - Configuring the build settings](/images/hosting/nuxt/5.png)
 
 Finally, click __Save and deploy__.

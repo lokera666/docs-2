@@ -23,7 +23,7 @@ Amplify.API.put(options,
 ```kotlin
 val request = RestOptions.builder()
     .addPath("/todo/1")
-    .addBody("{\"name\":\"Mow the lawn\"}".getBytes())
+    .addBody("{\"name\":\"Mow the lawn\"}".toByteArray())
     .build()
 
 Amplify.API.put(request,
@@ -33,7 +33,7 @@ Amplify.API.put(request,
 ```
 
 </Block>
-<Block name="Kotlin - Coroutines (Beta)">
+<Block name="Kotlin - Coroutines">
 
 ```kotlin
 val request = RestOptions.builder()

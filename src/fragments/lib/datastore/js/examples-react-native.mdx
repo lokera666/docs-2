@@ -6,11 +6,12 @@
 import React, { Component } from 'react';
 import { Text, StyleSheet, ScrollView } from 'react-native';
 
-import { Amplify, DataStore, Predicates } from 'aws-amplify';
+import { Amplify } from 'aws-amplify';
+import { DataStore, Predicates } from 'aws-amplify/datastore';
 import { Post, PostStatus, Comment } from './src/models';
 
-import awsConfig from './aws-exports';
-Amplify.configure(awsConfig);
+import amplifyconfig from './amplifyconfiguration.json';
+Amplify.configure(amplifyconfig);
 let subscription;
 
 class App extends Component {
@@ -37,12 +38,7 @@ class App extends Component {
     DataStore.save(
       new Post({
         title: `New Post ${Date.now()}`,
-        rating: (function getRandomInt(min, max) {
-          min = Math.ceil(min);
-          max = Math.floor(max);
-          // The maximum is exclusive and the minimum is inclusive
-          return Math.floor(Math.random() * (max - min)) + min;
-        })(5, 10),
+        rating: Math.floor(Math.random() * (8 - 1) + 1),
         status: PostStatus.ACTIVE
       })
     );
@@ -68,7 +64,7 @@ class App extends Component {
   }
 
   onQuery = async () => {
-    const posts = await DataStore.query(Post, (c) => c.rating('gt', 2));
+    const posts = await DataStore.query(Post, (c) => c.rating.gt(2));
     console.log('QUERY_POSTS_RESULT', posts);
     const comments = await DataStore.query(Comment);
     this.setState({ posts });
@@ -126,4 +122,4 @@ export default App;
 
 ## API Reference
 
-For the complete API documentation for DataStore, visit our [API Reference](https://aws-amplify.github.io/amplify-js/api/classes/datastore.html)
+For the complete API documentation for DataStore, visit our [API Reference](https://aws-amplify.github.io/amplify-js/api/modules/aws_amplify.datastore.html)
